@@ -1,5 +1,6 @@
 <template>
 <main>
+    <router-link to="/user/login">Login</router-link>
     <SearchForm v-model="query" :error="error"/>
     <Movies :loading="loading" :movies="movies" />
 </main>
