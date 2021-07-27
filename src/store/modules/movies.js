@@ -6,8 +6,8 @@ export default {
     loading: false,
     query: 'superman',
     error: {
-      show:false,
-      msg:''
+      show: false,
+      msg: ''
     }
 	},
 
@@ -26,7 +26,7 @@ export default {
 				msg
 			}
 		},
-		
+
 		SET_QUERY: (state, query) => {
 			state.query = query
 		}	
