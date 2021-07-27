@@ -16,9 +16,25 @@
 </template>
 
 <script>
-
+import { mapState, mapActions } from 'vuex'
 export default {
-  props: ['movies', 'loading']
+  computed: {
+    ...mapState({
+      movies: state => state.movies.movies,
+      loading: state => state.movies.loading,
+      query: state => state.movies.query,
+    })
+  },
+
+  methods: {
+    ...mapActions({
+      fetchData: 'SET_MOVIES'
+    })
+  },
+
+  created() {
+    this.fetchData(`&s=${this.query}`)
+  },
 }
 </script>
 
