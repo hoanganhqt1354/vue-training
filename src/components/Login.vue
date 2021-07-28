@@ -1,27 +1,53 @@
 <template>
 	<div class="login-form">
 		<h1>Login</h1>
-		<form autocomplete="off">
+		<form @submit.prevent="" autocomplete="off">
 			<label>Username:</label>
-			<input type="text" name="username" autocomplete="off" id="username">
+			<input type="text" name="username" autocomplete="off" id="username" v-model="username">
 			<label>Password:</label>
-			<input type="password" name="password" autocomplete="off" id="password">
-			<button type="submit">Login</button>
+			<input type="password" name="password" autocomplete="off" id="password" v-model="password">
+			<div class="" v-if="load_checking">Checking...</div>
+			<button v-else type="submit" @click="handleSubmit">Login</button>
 		</form>
 	</div>
 	
 </template>
 
 <script>
+import { mapState, mapActions } from 'vuex'
 export default {
 
   name: 'Login',
 
   data() {
     return {
-
+			username: '',
+			password: '',
     };
   },
+
+  computed: {
+		...mapState({
+			load_checking: state => state.account.load_checking
+		})
+  },
+
+  methods: {
+		...mapActions({
+			handleLogin: 'LOG_IN'
+		}),
+
+		handleSubmit() {
+			console.log('zzz')
+			const userInfo = {
+				name: this.username,
+				pass: this.password
+			}
+			this.handleLogin(userInfo)
+		}
+	},
+
+
 };
 </script>
 

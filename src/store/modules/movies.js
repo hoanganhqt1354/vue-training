@@ -1,10 +1,10 @@
 import axios from 'axios'
-
+/* eslint-disable */
 export default {
 	state: {
 		movies: [],
     loading: false,
-    query: 'superman',
+    query: '',
     error: {
       show: false,
       msg: ''
@@ -36,10 +36,11 @@ export default {
 		SET_MOVIES: ({commit}, param) => {
 			commit('SET_LOADING', true)
 			axios
-        .get(`https://www.omdbapi.com/?apikey=${process.env.VUE_APP_MOVIE_API_KEY}${param}`)
+        .get(`https://dev-drupal-api-hoanganh.pantheonsite.io/movie${param}`)
         .then((res) => {
-					if (res.data.Response === 'True') {
-            const movies = res.data.Search || res.data
+					console.log(res)
+					if (res.status === 200) {
+            const movies = res.data
             commit('SET_MOVIES', movies)
           }
           else {
@@ -50,7 +51,21 @@ export default {
           console.log(error);
         })
         .finally(() => (commit('SET_LOADING', false)))
-		}
+		},
+		DELETE_MOVIE: ({commit}, id) => {
+			const user = JSON.parse(localStorage.getItem('user'))
+			const csrfToken = user.csrf_token
+			axios
+				.delete(`https://dev-drupal-api-hoanganh.pantheonsite.io/jsonapi/node/movie/${id}`,{}, {
+					headers: {
+						'Content-Type': 'application/vnd.api+json',
+					}
+				})
+				.then(() => console.log('Xoa thanh cong'))
+				.catch((error) => {
+          console.log(error);
+        })
+		}	
 	},
 	
 

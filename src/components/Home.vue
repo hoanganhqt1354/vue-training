@@ -1,15 +1,19 @@
 <template>
 <main>
     <div class="login">
-      <router-link class="btn" to="/user/login">Login</router-link>
+      <router-link v-if="!loggedIn" class="btn" to="/user/login">Login</router-link>
+      <div v-else>Welcome, {{ userInfo.name }} 
+        <button @click="handleClickLogOut">Log out</button>
+      </div>
     </div>
     <SearchForm/>
     <Movies/>
 </main>
 </template>
 
-<script>
 
+<script>
+import { mapState, mapActions } from 'vuex'
 import Movies from './Movies.vue'
 import SearchForm from './SearchForm.vue'
 
@@ -19,6 +23,22 @@ export default {
     Movies,
     SearchForm,
   },
+  computed:{
+    ...mapState({
+      loggedIn: state => state.account.status.loggedIn,
+      userInfo: state => state.account.user.current_user
+    })
+  },
+
+  methods: {
+    ...mapActions({
+      logOut: 'LOG_OUT'
+    }),
+
+    handleClickLogOut() {
+      this.logOut()
+    }
+  }
 
 }
 </script>

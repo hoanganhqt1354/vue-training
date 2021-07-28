@@ -1,14 +1,14 @@
 <template>
   <div v-if="loading" class='loading'></div>
   <section v-else class="movies">
-      <router-link class="movie" v-for="movie in movies" :key="movie.imdbID" :to="{ name: 'SingleMovie', params: { id: movie.imdbID }}">
+      <router-link class="movie" v-for="movie in movies" :key="movie.id" :to="{ name: 'SingleMovie', params: { id: movie.id }}">
           <article>
-              <img :src="movie.Poster" :alt="movie.Title" />
+              <img :src="movie.poster" :alt="movie.title" />
               <div class="movie-info">
                   <h4 class="title">
-                      {{ movie.Title }}
+                      {{ movie.title }}
                   </h4>
-                  <p>{{ movie.Year }}</p>
+                  <p>{{ movie.year }}</p>
               </div>
           </article>
       </router-link>
@@ -33,7 +33,7 @@ export default {
   },
 
   created() {
-    this.fetchData(`&s=${this.query}`)
+    this.fetchData(`?title=${this.query}`)
   },
 }
 </script>

@@ -4,12 +4,12 @@
       <h1>{{ error.msg }}</h1>
        <router-link to="/" class="btn">Back to Home</router-link>
     </div> -->
-    <section v-else className="single-movie">
-    <img :src="movie.Poster" :alt="movie.Title" />
+    <section v-else className="single-movie" v-for="movie in movies" :key="movie.id">
+    <img :src="movie.poster" :alt="movie.title" />
     <div className="single-moive-info">
-      <h2>{{movie.Title}}</h2>
-      <p>{{movie.Plot}}</p>
-      <h4>{{movie.Year}}</h4>
+      <h2>{{movie.title}}</h2>
+      <p>{{movie.overview}}</p>
+      <h4>{{movie.year}}</h4>
       <router-link to="/" class="btn">Back to Home</router-link>
     </div>
   </section>    
@@ -22,7 +22,7 @@ export default {
 
   computed: {
     ...mapState({
-      movie: state => state.movies.movies,
+      movies: state => state.movies.movies,
       loading: state => state.movies.loading,
     })
   },
@@ -35,7 +35,7 @@ export default {
   
   created() {
     const fetchedId = this.$route.params.id
-    this.fetchData(`&i=${fetchedId}`)
+    this.fetchData(`?id=${fetchedId}`)
   },
   
 }

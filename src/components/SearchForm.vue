@@ -17,7 +17,7 @@ export default {
       },
       set (value) {
         this.$store.commit('SET_QUERY', value)
-        this.$store.dispatch('SET_MOVIES', `&s=${value}`)
+        this.$store.dispatch('SET_MOVIES', `?title=${value}`)
       }
     }
   }
