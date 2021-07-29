@@ -3,6 +3,7 @@ import Home from '../components/Home.vue'
 import SingleMovie from '../components/SingleMovie.vue'
 import Login from '../components/Login.vue'
 import ListContent from '../components/admin/ListContent.vue'
+import FormAdd from '../components/admin/FormAdd.vue'
 
 const routes = [
   {
@@ -25,6 +26,11 @@ const routes = [
     name: 'ListContent',
     component: ListContent
   },
+  {
+    path: '/manage/content/add',
+    name: 'FormAdd',
+    component: FormAdd
+  },
 ]
 
 const router = createRouter({
@@ -32,15 +38,15 @@ const router = createRouter({
   routes
 })
 
-// router.beforeEach((to, from, next) => {
-//   const loggedIn = localStorage.getItem('user');
+router.beforeEach((to, from, next) => {
+  const loggedIn = localStorage.getItem('user');
 
-//   if (loggedIn && to.name === "Login") {
-//     return next('/')
-//   }
-//   else {
-//     next()
-//   }
-// })
+  if (loggedIn && to.name === "Login") {
+    return next('/')
+  }
+  else {
+    next()
+  }
+})
 
 export default router
