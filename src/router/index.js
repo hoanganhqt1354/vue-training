@@ -31,6 +31,11 @@ const routes = [
     name: 'FormAdd',
     component: FormAdd
   },
+  {
+    path: '/manage/content/:uuid/edit',
+    name: 'EditData',
+    component: FormAdd
+  },
 ]
 
 const router = createRouter({

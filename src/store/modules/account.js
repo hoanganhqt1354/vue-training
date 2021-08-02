@@ -57,7 +57,7 @@ actions: {
 				localStorage.setItem('user', JSON.stringify(currentUser))
         localStorage.setItem('basic', basic)
 				commit('LOGIN_SUCCESS', currentUser)
-				router.push('/manage/content');
+				router.push('/manage/content')
 			})
 			.catch((error) => {
         commit('LOGIN_FAIL', 'Username or password is wrong')

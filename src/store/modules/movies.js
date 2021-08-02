@@ -1,18 +1,23 @@
 import axios from 'axios'
+import router from '../.././router'
+import moment from 'moment'
 /* eslint-disable */
 
 const basic = localStorage.getItem('basic')
-
+const currentDate = () => {
+  return moment(String(new Date())).format('YYYY-MM-DD')
+}
 
 export default {
   state: {
     movies: [],
     loading: false,
     query: '',
-    error: {
-    show: false,
-    msg: ''
-    }
+    notification: {
+      show: false,
+      msg: ''
+    },
+    singleMovie: {}
   },
 
   mutations: {
@@ -24,8 +29,8 @@ export default {
       state.loading = boolean
     },
 
-    SET_MSG_ERROR: (state, msg) => {
-      state.error = {
+    SET_NOTIFICATION: (state, msg) => {
+      state.notification = {
         show: true,
         msg
       }
@@ -33,7 +38,16 @@ export default {
 
     SET_QUERY: (state, query) => {
       state.query = query
-    } 
+    },
+
+    SET_SINGLE_MOVIES: (state, singleMovie) => {
+      state.singleMovie = {...singleMovie, poster_fid: null}
+      console.log(state.singleMovie)
+    },
+
+    DELETE_MOVIE: (state, id) => {
+      state.movies = state.movies.filter((movie) => movie.id !== id)
+    }
   },
 
   actions: {
@@ -47,7 +61,7 @@ export default {
             commit('SET_MOVIES', movies)
           }
           else {
-            commit('SET_MSG_ERROR', 'Error')            
+            commit('SET_NOTIFICATION', 'Error')            
           }
         })
         .catch((error) => {
@@ -57,16 +71,41 @@ export default {
     },
 
     ADD_MOVIE: ({commit}, object_movie) => {
-      const body = {
-        "data": {
-          "type": "node--movie",
-          "attributes": {
-            "title": object_movie.title,
-            "field_overview": object_movie.overview,
-            "field_date": object_movie.date
+      console.log(object_movie)
+      let body = {
+          "data": {
+            "type": "node--movie",
+            "id": object_movie.uuid,
+            "attributes": {
+              "title": object_movie.title,       
+              "field_overview": object_movie.overview,
+              "field_date": object_movie.date
+            }
           }
         }
-      }
+
+      if (object_movie.poster_fid !== null) {
+        body = {
+          "data": {
+            "type": "node--movie",
+            "attributes": {
+              "title": object_movie.title,
+              "field_overview": object_movie.overview || "",
+              "field_date": object_movie.date
+            },
+            "relationships": {
+              "field_image_poster": {
+                "data": {
+                  "type": "file--file",
+                  "id": object_movie.poster_fid,
+
+                }
+              }
+            }
+          }
+        }
+      }    
+      console.log(body)
       axios({
         method: 'post',
         url: `https://dev-drupal-api-hoanganh.pantheonsite.io/jsonapi/node/movie`,
@@ -75,16 +114,71 @@ export default {
           'Content-Type': 'application/vnd.api+json',
           'Authorization': basic,
         }
-      }).then(() => console.log('Them thanh cong'))
+      }).then(() => {
+        router.push('/manage/content');
+        commit('SET_NOTIFICATION', 'New movie have been added')
+      })
       .catch((error) => {
-        console.log("Loi ne", error);
+        console.log("Error", error);
       });
         
     },
 
+    EDIT_MOVIE: ({commit}, object_movie) => {
+      let body = {
+          "data": {
+            "type": "node--movie",
+            "id": object_movie.uuid,
+            "attributes": {
+              "title": object_movie.title,       
+              "field_overview": object_movie.overview,
+              "field_date": object_movie.date
+            }
+          }
+        }  
+      if (object_movie.poster_fid !== null) {
+        body = {
+          "data": {
+            "type": "node--movie",
+            "id": object_movie.uuid,
+            "attributes": {
+              "title": object_movie.title,       
+              "field_overview": object_movie.overview,
+              "field_date": object_movie.date
+            },
+            "relationships": {
+              "field_image_poster": {
+                "data": {
+                  "type": "file--file",
+                  "id": object_movie.poster_fid,
 
+                }
+              }
+            }
+          }
+        }
+      }    
+      axios({
+        method: 'patch',
+        url: `https://dev-drupal-api-hoanganh.pantheonsite.io/jsonapi/node/movie/${object_movie.uuid}`,
+        data: body,
+        headers: {
+          'Content-Type': 'application/vnd.api+json',
+          'Authorization': basic,
+        }
+      }).then(() => {
+        router.push('/manage/content');
+        commit('SET_NOTIFICATION', 'Movie have been edited')
+      })
+      .catch((error) => {
+        console.log("Error", error);
+      });
+        
+    },
 
     DELETE_MOVIE: ({commit, dispatch}, id) => {
+      commit('SET_LOADING', true)
+      commit('DELETE_MOVIE', id)
       axios({
         method: 'delete',
         url: `https://dev-drupal-api-hoanganh.pantheonsite.io/node/${id}?_format=json`,
@@ -92,14 +186,31 @@ export default {
           'Authorization': basic,
         }
       }).then(() => {
-        console.log('Xoa thanh cong')
-        dispatch('SET_MOVIES','?title=')
+        commit('SET_NOTIFICATION', `Movie #${id} deleted`)
       })
       .catch((error) => {
-        console.log("Loi ne", error);
-      });
+        console.log("Error", error);
+      })
+      .finally(() => (commit('SET_LOADING', false)))
         
     },
+
+    GET_SINGLE_MOVIE: ({commit}, id) => {
+      commit('SET_LOADING', true)
+      axios({
+        method: 'get',
+        url: `https://dev-drupal-api-hoanganh.pantheonsite.io/movie?uuid=${id}`
+      }).then((res) => {
+        if (res.status === 200) {
+          console.log(res.data[0])
+          commit('SET_SINGLE_MOVIES', res.data[0])
+        }
+      })
+      .catch((error) => {
+        console.log("Error", error);
+      })
+      .finally(() => (commit('SET_LOADING', false)))
+    }
 
   },
   

@@ -1,6 +1,6 @@
 <template>
 <main>
-    <Header />
+    <Header title="To list manage" link="/manage/content" />
     <SearchForm/>
     <Movies/>
 </main>

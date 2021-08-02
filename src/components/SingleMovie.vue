@@ -5,11 +5,11 @@
        <router-link to="/" class="btn">Back to Home</router-link>
     </div> -->
     <section v-else className="single-movie" v-for="movie in movies" :key="movie.id">
-    <img :src="movie.poster" :alt="movie.title" />
+    <img :src="movie.poster ? movie.poster : url" :alt="movie.title" />
     <div className="single-moive-info">
       <h2>{{movie.title}}</h2>
       <p>{{movie.overview}}</p>
-      <h4>{{movie.year}}</h4>
+      <h4>{{movie.date}}</h4>
       <router-link to="/" class="btn">Back to Home</router-link>
     </div>
   </section>    
@@ -19,6 +19,11 @@
 
 import { mapState, mapActions } from 'vuex'
 export default {
+  data() {
+    return {
+      url: 'https://upload.wikimedia.org/wikipedia/commons/f/fc/No_picture_available.png',
+    }
+  },
 
   computed: {
     ...mapState({
