@@ -71,6 +71,9 @@ export default {
   created() {
     this.fetchData(`?title=`)
   },
+  unmounted() {
+   this.$store.commit('SET_NOTIFICATION', {show: false, msg: ''})
+  }
 }
 </script>
 

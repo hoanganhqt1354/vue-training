@@ -3,7 +3,6 @@ import router from '../.././router'
 import moment from 'moment'
 /* eslint-disable */
 
-const basic = localStorage.getItem('basic')
 const currentDate = () => {
   return moment(String(new Date())).format('YYYY-MM-DD')
 }
@@ -30,10 +29,7 @@ export default {
     },
 
     SET_NOTIFICATION: (state, msg) => {
-      state.notification = {
-        show: true,
-        msg
-      }
+      state.notification = msg
     },
 
     SET_QUERY: (state, query) => {
@@ -41,8 +37,7 @@ export default {
     },
 
     SET_SINGLE_MOVIES: (state, singleMovie) => {
-      state.singleMovie = {...singleMovie, poster_fid: null}
-      console.log(state.singleMovie)
+      state.singleMovie = {...singleMovie}
     },
 
     DELETE_MOVIE: (state, id) => {
@@ -61,7 +56,7 @@ export default {
             commit('SET_MOVIES', movies)
           }
           else {
-            commit('SET_NOTIFICATION', 'Error')            
+            commit('SET_NOTIFICATION', {show: true, msg: 'Error'})            
           }
         })
         .catch((error) => {
@@ -71,20 +66,20 @@ export default {
     },
 
     ADD_MOVIE: ({commit}, object_movie) => {
-      console.log(object_movie)
+      const basic = localStorage.getItem('basic')
       let body = {
-          "data": {
-            "type": "node--movie",
-            "id": object_movie.uuid,
-            "attributes": {
-              "title": object_movie.title,       
-              "field_overview": object_movie.overview,
-              "field_date": object_movie.date
-            }
+        "data": {
+          "type": "node--movie",
+          "id": object_movie.uuid,
+          "attributes": {
+            "title": object_movie.title,       
+            "field_overview": object_movie.overview,
+            "field_date": object_movie.date
           }
         }
+      }
 
-      if (object_movie.poster_fid !== null) {
+      if (typeof object_movie.poster_fid !== 'undefined') {
         body = {
           "data": {
             "type": "node--movie",
@@ -105,7 +100,6 @@ export default {
           }
         }
       }    
-      console.log(body)
       axios({
         method: 'post',
         url: `https://dev-drupal-api-hoanganh.pantheonsite.io/jsonapi/node/movie`,
@@ -116,7 +110,7 @@ export default {
         }
       }).then(() => {
         router.push('/manage/content');
-        commit('SET_NOTIFICATION', 'New movie have been added')
+        commit('SET_NOTIFICATION', {show: true, msg:`Movie ${object_movie.title} have been added`})
       })
       .catch((error) => {
         console.log("Error", error);
@@ -125,18 +119,19 @@ export default {
     },
 
     EDIT_MOVIE: ({commit}, object_movie) => {
+      const basic = localStorage.getItem('basic')
       let body = {
-          "data": {
-            "type": "node--movie",
-            "id": object_movie.uuid,
-            "attributes": {
-              "title": object_movie.title,       
-              "field_overview": object_movie.overview,
-              "field_date": object_movie.date
-            }
+        "data": {
+          "type": "node--movie",
+          "id": object_movie.uuid,
+          "attributes": {
+            "title": object_movie.title,       
+            "field_overview": object_movie.overview,
+            "field_date": object_movie.date
           }
-        }  
-      if (object_movie.poster_fid !== null) {
+        }
+      }  
+      if (typeof object_movie.poster_fid !== 'undefined') {
         body = {
           "data": {
             "type": "node--movie",
@@ -168,7 +163,7 @@ export default {
         }
       }).then(() => {
         router.push('/manage/content');
-        commit('SET_NOTIFICATION', 'Movie have been edited')
+        commit('SET_NOTIFICATION', {show: true, msg:`Movie ${object_movie.title} have been edited`})
       })
       .catch((error) => {
         console.log("Error", error);
@@ -177,6 +172,7 @@ export default {
     },
 
     DELETE_MOVIE: ({commit, dispatch}, id) => {
+      const basic = localStorage.getItem('basic')
       commit('SET_LOADING', true)
       commit('DELETE_MOVIE', id)
       axios({
@@ -186,7 +182,7 @@ export default {
           'Authorization': basic,
         }
       }).then(() => {
-        commit('SET_NOTIFICATION', `Movie #${id} deleted`)
+        commit('SET_NOTIFICATION', {show: true, msg:`Movie #${id} deleted`})
       })
       .catch((error) => {
         console.log("Error", error);

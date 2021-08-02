@@ -1,9 +1,16 @@
 <template>
   <div class="container">
     <Header title="To list manage" link="/manage/content" />
-    <div v-if="loading" class='loading'></div>
-    <form v-else @submit.prevent="">
-      <h1>{{ editing ? 'Edit' : "Add" }} data</h1>
+    
+    <h1>{{ editing ? 'Edit' : "Add" }} data</h1>
+    <p v-if="errors.length">
+      <b>Please correct the following error(s):</b>
+      <ul>
+        <li class="text-danger" v-for="error in errors" :key="error.id">{{ error }}</li>
+      </ul>
+    </p> 
+    <div v-if="loading" class='loading'></div>    
+    <form v-else @submit.prevent="">   
       <div class="form-group">
         <label for="title">Title</label>
         <input type="text" class="form-control" id="title" placeholder="" v-model="movie.title">
@@ -38,7 +45,7 @@ export default {
   },
   data() {
     return {
-      error: [],
+      errors: [],
       editing: false,
       item:{
         image : null,
@@ -62,6 +69,11 @@ export default {
     }),
 
     handleClick() {
+      this.errors = []
+      if (!this.movie.title) {
+        this.errors.push('Title required.');
+      }
+
       if(this.editing === true) {
         if (this.movie.title) {
           this.editMovie(this.movie) 
@@ -109,7 +121,7 @@ export default {
   },
   unmounted() {
    this.$store.commit('SET_SINGLE_MOVIES', {})
-  }
+  },
 };
 </script>
 
